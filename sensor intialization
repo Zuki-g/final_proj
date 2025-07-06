@@ -1,0 +1,173 @@
+///////////////////////////////////////////////////////////
+		sensor connection computers:
+		left: Zed cameras, innoviz One LiDAR
+		right: Ouster LiDAR, INS
+//////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////
+	 Router Settings and static ip addresses
+
+		camera jetson: 192.168.1.101
+		lidar_jetson: 192.168.1.102
+		ouster: 192:168.1.201
+		innoviz at 192.168.1.202
+//////////////////////////////////////////////////////////
+		
+------------------------------
+	ROS commands
+------------------------------
+
+to see topic list: 
+ros2:	ros2 topic list
+
+ros1:	rostopic list
+
+--------------------------------------
+	Ouster initialization
+--------------------------------------
+
+cd ros2_ws 
+
+[[[[ LEGACY - WHEN CONNECTED DIRECTLY TO JETSON]]]]
+ros2 launch ouster_ros record.launch.xml  sensor_hostname:="os-122214001580.local"  lidar_mode:=1024x10
+
+[[[[ WHEN CONNECTED TO ROUTER ]]]]
+ros2 launch ouster_ros sensor.launch.xml  sensor_hostname:=192.168.1.201  lidar_mode:=1024x10 viz:=false 
+
+((((to also visualize right away - remove viz:=false)))) 
+
+
+[[Visualization]]
+ros2 run rviz2 rviz2
+set fixed_frame to os_lidar 
+add pointcloud2, topic: /ouster/points
+
+--------------------------------------
+	ZED Camera initialization
+-------------------------------------
+
+cd ros2_ws/src/zed-ros2-wrapper/
+ros2 launch zed_wrapper dual_zed_launch.py
+
+[[Visualization]]
+ros2 run rviz2 rviz2 
+set fixed frame to:zed_front_camera_link (front/rear)
+topic: /zed_rear/zed_node/rgb/image_rect_color (front/rear)
+
+###### For documentation #########
+front camera serial number: 39453324
+rear camera serial number: 35014157
+##################################
+
+--------------------------------------
+	INS initialization
+--------------------------------------
+# make sure you are connected to COM1 at the back of the car #
+
+cd ros2_ws/
+
+#######################################################################################
+####### For Documentation - only needed on installation or when INS is not found ######
+##	sudo chmod 666 /dev/ttyUSB0							##
+##	sudo stty -F /dev/ttyUSB0 115200						##
+##	source install/setup.bash							##
+#######################################################################################
+
+ros2 run inertiallabs_ins il_ins --ros-args -p ins_url:=serial:/dev/ttyUSB0:115200 -p ins_output_format:=102
+//////////// note that several output formats are available ////////////////////
+
+to see the data in the terminal:
+ros2 topic echo /Inertial_Labs/sensor_data
+
+--------------------------------------
+	Innoviz initialization
+--------------------------------------
+## first we have to set os to ros1 and source the workspace - and keep it running##
+source /opt/ros/noetic/setup.bash
+roscore
+
+## in a different terminal##
+cd ~/catkin_ws/
+source devel/setup.bash
+roslaunch innoviz_ros innoviz_ros.launch
+
+##################### NOTE ########################
+we had a problem - the sensor initialization was dying with error 11, what fixed it is granting our binary access to raw sockets:
+sudo setcap cap_net_raw,cap_net_admin=eip ~/catkin_ws/devel/lib/innoviz_ros/Innoviz_one_Device
+###################################################
+
+[[Visualization]]
+ros2 run rviz2 rviz2 
+set fixed frame to: base_link 
+topic: /invz_reflection_0
+
+--------------------------------------	
+ROS2 -> ROS1 bridge
+--------------------------------------
+
+source /opt/ros/noetic/setup.bash
+source /opt/ros/foxy/setup.bash
+
+to setup the bridge follow these instructions:
+
+Terminal1 (ROS1):
+source /opt/ros/noetic/setup.bash 
+roscore
+
+Terminal2 (ROS2):
+source /opt/ros/noetic/setup.bash
+source /opt/ros/foxy/setup.bash
+ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+
+now you can a topic in ROS2 and listen to it in ROS1.
+make sure to not close the roscore terminal and the bridge terminal.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~	can be checked by the talker:		~~~
+~~~	Terminal3 (ROS2):			~~~
+~~~	source /opt/ros/foxy/setup.bash	~~~
+~~~	ros2 run demo_nodes_py talker		~~~
+~~~						~~~
+~~~	Terminal4 (ROS1):			~~~
+~~~	source /opt/ros/noetic/setup.bash	~~~
+~~~	rostopic echo /chatter			~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+------------------------------------------
+	Recording System
+------------------------------------------
+roscore has to be running in the background
+
+source /opt/ros/noetic/setup.bash
+source devel/setup.bash
+rqt
+
+(go to plugins > logging > car recording system)
+
+
+-----------------------------------------
+	Saving data from sensors
+-----------------------------------------
+~~~~~~~to save photos from camera:~~~~~~~~~
+ros2 run zed2i_data_collector_1 zed2i_data_collector_1
+ros2 run zed2i_data_collector_1 zed2i_data_collector_1 --ros-args -p dataset_location:=/mnt/b805e5bb-0cd3-495f-a182-7216dc6b8ea9/tau_dataset -p camera_direction:=front
+
+~~~~~~~to save photos from lidar:~~~~~~~~~
+ros2 run ouster_data_collector ouster_data_collector --ros-args -p dataset_location:=/mnt/b805e5bb-0cd3-495f-a182-7216dc6b8ea9/tau_dataset
+
+
+-------------------------------------------
+STATIC IPs
+-------------------------------------------
+Static ip addresses:
+camera jetson: 192.168.1.101
+lidar_jetson: 192.168.1.102
+ouster: 192:168.1.201
+innoviz at 192.168.1.202
+
+
+
+
+
