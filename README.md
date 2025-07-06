@@ -1,8 +1,5 @@
 # final_proj
-ros1 and ros2 full folders 
+sensor viewer GUI plugin for rQT
 
+This GIT contains the plugin itself, and a document with a detailed explanation of installation process.
 
-
-THESE FOLDERS ARE THE WORKSPACES FOR ROS1 AND ROS2
-
-a .word manual is also included in the repository.
