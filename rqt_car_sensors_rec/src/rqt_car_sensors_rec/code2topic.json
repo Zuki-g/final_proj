@@ -1,0 +1,5 @@
+'{LIDAR_CODE: "/velodyne_points",
+  RADAR_CODE: "/as_tx/radar_markers",
+  CAMERA_CODE: "/image_raw /image_raw/compressed",
+  INS_CODE: "/Inertial_Labs/sensor_data /Inertial_Labs/ins_data /Inertial_Labs/gps_data"
+}'

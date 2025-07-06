@@ -1,0 +1,22 @@
+<RCC>
+  <qresource prefix="Images">
+    <file>images/innoviz.png</file>
+    <file>images/Ins.png</file>
+    <file>images/depth.png</file>
+    <file>images/zed.png</file>
+    <file>images/ouster.png</file>
+    <file>images/icons8-eject-64.png</file>
+    <file>images/icons8-pause-64.png</file>
+    <file>images/icons8-play-64.png</file>
+    <file>images/icons8-record-64.png</file>
+    <file>images/icons8-stop-64.png</file>
+    <file>images/icons8-cancel-48.png</file>
+    <file>images/icons8-delete-96.png</file>
+    <file>images/icons8-opened-folder-48.png</file>
+    <file>images/icons8-opened-folder-96.png</file>
+    <file>images/icons8-record-48.png</file>
+    <file>images/icons8-stop-64.png</file>
+    <file>images/icons8-stop-sign-50.png</file>
+    <file>images/icons8-stop-sign-50 (1).png</file>
+  </qresource>
+</RCC>

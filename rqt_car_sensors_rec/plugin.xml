@@ -1,0 +1,17 @@
+<library path="src">
+  <class name="Car Sensors Recorder" type="rqt_car_sensors_rec.car_sensors_rec_gui.CarSensorsRec" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A Python GUI plugin for controling rosbag, in order to record needed topics.
+    </description>
+    <qtgui>
+      <group>
+        <label>Logging</label>
+        <icon type="theme">folder</icon>
+        <statustip>Plugins related to logging.</statustip>
+      </group>
+      <label>Car Sensors Recorder</label>
+      <icon type="theme">applications-other</icon>
+      <statustip>A Python GUI plugin for controling rosbag, in order to record needed topics.</statustip>
+    </qtgui>
+  </class>
+</library>
